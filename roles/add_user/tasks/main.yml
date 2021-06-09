@@ -1,0 +1,30 @@
+- name: Create user if not exists
+  user:
+    name: my_user_name
+    createhome: yes
+    groups: wheel
+    state: present
+  when: ansible_os_family=="RedHat"
+
+- name: Create user if not exists
+  user:
+    name: my_user_name
+    createhome: yes
+    groups: sudo
+    state: present
+  when: ansible_os_family=="Debian"
+    
+- name: Distribute authorized key to all nodes
+  authorized_key: 
+    user: my_user_name
+    state: present
+    key: "{{ lookup('file', '/home/my_user_name/.ssh/id_rsa.pub') }}"
+    
+- name: Disable password confirmation 
+  template:
+    src: templates/sudoers.d/user.j2
+    dest: /etc/sudoers.d/my_user_name
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Configure account password never expire
+  shell: passwd -x -1 my_user_name
