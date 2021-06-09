@@ -1,0 +1,6 @@
+- name: basic conf
+  hosts: all
+  roles:
+    - add_user
+  become: yes
+  gather_facts: yes
